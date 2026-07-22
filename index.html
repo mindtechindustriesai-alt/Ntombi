@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ntombi "Bellz" Mdluli · Infinite Birthday</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #050508;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial Black', Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== GLASS OVERLAY ===== */
+        .glass-overlay {
+            position: fixed;
+            inset: 12px;
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.25);
+            background: rgba(5, 8, 15, 0.3);
+            backdrop-filter: blur(2px);
+            box-shadow: 
+                0 0 60px rgba(255, 215, 0, 0.06),
+                0 0 120px rgba(255, 215, 0, 0.03),
+                inset 0 0 80px rgba(255, 215, 0, 0.03);
+            animation: glassPulse 4s ease-in-out infinite;
+        }
+
+        .glass-overlay::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 32px;
+            padding: 3px;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                rgba(255, 215, 0, 0.5),
+                transparent 15%,
+                rgba(255, 107, 107, 0.4),
+                transparent 30%,
+                rgba(255, 215, 0, 0.5),
+                transparent 45%,
+                rgba(255, 107, 107, 0.3),
+                transparent 60%,
+                rgba(255, 215, 0, 0.4),
+                transparent 75%,
+                rgba(255, 107, 107, 0.4),
+                transparent 90%,
+                rgba(255, 215, 0, 0.5),
+                transparent
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderSpin 6s linear infinite;
+        }
+
+        .glass-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.06), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.03), transparent 70%);
+            animation: lightSweep 5s ease-in-out infinite;
+        }
+
+        @keyframes glassPulse {
+            0%, 100% { 
+                border-color: rgba(255, 215, 0, 0.25);
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.06), inset 0 0 80px rgba(255, 215, 0, 0.03);
+            }
+            50% { 
+                border-color: rgba(255, 107, 107, 0.35);
+                box-shadow: 0 0 80px rgba(255, 107, 107, 0.10), inset 0 0 100px rgba(255, 107, 107, 0.05);
+            }
+        }
+
+        @keyframes borderSpin {
+            0% { transform: rotate(0deg); opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { transform: rotate(360deg); opacity: 0.8; }
+        }
+
+        @keyframes lightSweep {
+            0%, 100% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+            33% { opacity: 0.8; transform: scale(1.02) rotate(0.5deg); }
+            66% { opacity: 0.6; transform: scale(0.98) rotate(-0.5deg); }
+        }
+
+        /* ===== FLOATING ORBS ===== */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.06), transparent 70%);
+            border: 1px solid rgba(255, 215, 0, 0.04);
+            animation: floatOrb 18s infinite ease-in-out;
+            backdrop-filter: blur(6px);
+        }
+
+        .orb:nth-child(1) { width: 600px; height: 600px; top: -150px; left: -150px; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 450px; height: 450px; bottom: -120px; right: -120px; animation-delay: -6s; }
+        .orb:nth-child(3) { width: 300px; height: 300px; top: 60%; left: 2%; animation-delay: -12s; }
+        .orb:nth-child(4) { width: 500px; height: 500px; bottom: 10%; right: 2%; animation-delay: -3s; }
+        .orb:nth-child(5) { width: 200px; height: 200px; top: 10%; right: 8%; animation-delay: -9s; }
+        .orb:nth-child(6) { width: 350px; height: 350px; bottom: 30%; left: 15%; animation-delay: -15s; }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            25% { transform: translate(60px, -90px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-50px, 70px) scale(0.8); opacity: 0.3; }
+            75% { transform: translate(70px, 50px) scale(1.1); opacity: 0.4; }
+        }
+
+        /* ===== CORNER GLOWS ===== */
+        .corner-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(150px);
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.06;
+            animation: cornerPulse 6s ease-in-out infinite alternate;
+        }
+
+        .corner-glow.tl { top: -250px; left: -250px; background: radial-gradient(circle, #FFD700, transparent 70%); }
+        .corner-glow.br { bottom: -250px; right: -250px; background: radial-gradient(circle, #FF6B6B, transparent 70%); animation-delay: 3s; }
+        .corner-glow.tr { top: -250px; right: -250px; background: radial-gradient(circle, #FFD700, transparent 70%); animation-delay: 1.5s; }
+        .corner-glow.bl { bottom: -250px; left: -250px; background: radial-gradient(circle, #FF6B6B, transparent 70%); animation-delay: 4.5s; }
+
+        @keyframes cornerPulse {
+            0% { opacity: 0.03; transform: scale(0.7) rotate(0deg); }
+            50% { opacity: 0.12; transform: scale(1.4) rotate(5deg); }
+            100% { opacity: 0.05; transform: scale(0.8) rotate(-5deg); }
+        }
+
+        .hint {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 215, 0, 0.15);
+            font-family: 'Arial', monospace;
+            font-size: 10px;
+            letter-spacing: 4px;
+            pointer-events: none;
+            text-transform: uppercase;
+            z-index: 20;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.05);
+            animation: hintPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.12; letter-spacing: 4px; }
+            50% { opacity: 0.25; letter-spacing: 6px; }
+        }
+
+        @media (max-width: 768px) {
+            .glass-overlay { inset: 6px; border-radius: 16px; }
+            .glass-overlay::before { border-radius: 18px; }
+            .glass-overlay::after { border-radius: 16px; }
+            .orb { display: none; }
+            .corner-glow { width: 200px; height: 200px; filter: blur(80px); }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="glass-overlay"></div>
+<div class="orb"></div><div class="orb"></div><div class="orb"></div>
+<div class="orb"></div><div class="orb"></div><div class="orb"></div>
+<div class="corner-glow tl"></div>
+<div class="corner-glow tr"></div>
+<div class="corner-glow bl"></div>
+<div class="corner-glow br"></div>
+
+<canvas id="infiniteCanvas"></canvas>
+
+<div class="hint">✨ click to restart · infinite birthday journey for ntombi "bellz" mdluli</div>
+
+<script>
+
+const canvas = document.getElementById('infiniteCanvas');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+let currentScale = 0.35;
+
+/* ============================================================
+   30 BIBLE VERSES
+============================================================ */
+
+const bibleVerses = [
+    "Jeremiah 29:11 — For I know the plans I have for you, plans to prosper you and not to harm you, plans to give you hope and a future.",
+    "Psalm 118:24 — This is the day the Lord has made; let us rejoice and be glad in it.",
+    "Isaiah 40:31 — Those who hope in the Lord will renew their strength. They will soar on wings like eagles.",
+    "Philippians 4:13 — I can do all things through Christ who strengthens me.",
+    "Proverbs 3:5 — Trust in the Lord with all your heart and lean not on your own understanding.",
+    "Psalm 23:6 — Surely goodness and mercy shall follow me all the days of my life.",
+    "Numbers 6:24 — The Lord bless you and keep you.",
+    "Numbers 6:25 — The Lord make His face shine upon you and be gracious to you.",
+    "Numbers 6:26 — The Lord turn His face toward you and give you peace.",
+    "Psalm 37:4 — Delight yourself in the Lord, and He will give you the desires of your heart.",
+    "Proverbs 16:3 — Commit to the Lord whatever you do, and He will establish your plans.",
+    "Romans 8:28 — In all things God works for the good of those who love Him.",
+    "Psalm 121:8 — The Lord will watch over your coming and going both now and forevermore.",
+    "Deuteronomy 31:8 — The Lord Himself goes before you and will never leave you nor forsake you.",
+    "Isaiah 43:2 — When you pass through the waters, I will be with you.",
+    "Joshua 1:9 — Be strong and courageous. Do not be afraid, for the Lord your God is with you.",
+    "Psalm 20:4 — May He give you the desire of your heart and make all your plans succeed.",
+    "Proverbs 31:25 — She is clothed with strength and dignity; she can laugh at the days to come.",
+    "Ephesians 3:20 — God is able to do immeasurably more than all we ask or imagine.",
+    "Isaiah 54:10 — Though the mountains be shaken, my unfailing love for you will not be shaken.",
+    "Psalm 126:3 — The Lord has done great things for us, and we are filled with joy.",
+    "Jeremiah 33:3 — Call to me and I will answer you and tell you great and unsearchable things.",
+    "Zephaniah 3:17 — The Lord your God is with you, the Mighty Warrior who saves.",
+    "Psalm 138:8 — The Lord will vindicate me; your love, Lord, endures forever.",
+    "Proverbs 4:23 — Above all else, guard your heart, for everything you do flows from it.",
+    "Psalm 34:8 — Taste and see that the Lord is good; blessed is the one who takes refuge in Him.",
+    "Isaiah 40:8 — The grass withers and the flowers fall, but the word of our God endures forever.",
+    "Psalm 27:1 — The Lord is my light and my salvation; whom shall I fear?",
+    "Proverbs 2:6 — For the Lord gives wisdom; from His mouth come knowledge and understanding.",
+    "Isaiah 41:10 — So do not fear, for I am with you; do not be dismayed, for I am your God."
+];
+
+
+/* ============================================================
+   30 MOTIVATIONAL QUOTES
+============================================================ */
+
+const motivationalQuotes = [
+    "Your light is not meant to be hidden. You were created to shine brilliantly.",
+    "You are stronger than every challenge that tried to break you.",
+    "Keep going. Your story is still being written, and the best chapters are yet to come.",
+    "The best chapters of your life may still be ahead. Keep believing.",
+    "Never underestimate the power of a woman who refuses to give up.",
+    "You were born to shine, not to shrink yourself for the world.",
+    "Every new day is another opportunity to become more of who you are meant to be.",
+    "Your journey may not be perfect, but it is uniquely yours and beautiful.",
+    "Dream boldly. Walk faithfully. Live courageously. You are unstoppable.",
+    "The world is better because you are in it. Never forget that.",
+    "Your strength is greater than your circumstances. You are an overcomer.",
+    "Do not count the days. Make the days count. Every moment is a gift.",
+    "You carry a light that darkness cannot overcome. Shine on.",
+    "Keep believing in the woman you are becoming. She is extraordinary.",
+    "There is greatness in you that is still unfolding. Embrace the process.",
+    "You are not just a survivor. You are a warrior. You are a queen.",
+    "Your faith has carried you through the storms. Keep trusting.",
+    "God's timing is perfect. Trust the journey and enjoy the process.",
+    "You are a masterpiece in progress. Every day you grow more beautiful.",
+    "Your future is as bright as your faith. Keep believing in God's promises.",
+    "Your resilience is your superpower. Nothing can stop you now.",
+    "You were created for such a time as this. Step into your destiny.",
+    "Your story will inspire others. Keep writing it with courage.",
+    "Your worth is not defined by your circumstances. You are priceless.",
+    "You are loved beyond measure. Never doubt your worth.",
+    "Your potential is limitless. God has great plans for you.",
+    "You have overcome every obstacle because you are unstoppable.",
+    "Your smile lights up the world. Keep shining, Bellz.",
+    "You are a blessing to everyone who knows you. Never forget that.",
+    "Today is the beginning of the rest of your beautiful life."
+];
+
+
+/* ============================================================
+   CANVAS RESIZE
+============================================================ */
+
+function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+
+/* ============================================================
+   TEXT HELPER - ULTRA READABLE
+============================================================ */
+
+function drawCenteredText(
+    text,
+    size,
+    color,
+    scale,
+    yOffset = 0,
+    rotation = 0,
+    maxWidth = W * 0.85
+) {
+    ctx.save();
+    ctx.translate(W / 2, H / 2 + yOffset);
+    ctx.rotate(rotation);
+    
+    ctx.font = `900 ${size}px 'Arial Black', Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    let words = text.split(" ");
+    let lines = [];
+    let line = "";
+    for (let word of words) {
+        let testLine = line + word + " ";
+        if (ctx.measureText(testLine).width > maxWidth && line !== "") {
+            lines.push(line);
+            line = word + " ";
+        } else {
+            line = testLine;
+        }
+    }
+    lines.push(line);
+
+    const lineHeight = size * 1.4;
+    lines.forEach((lineText, index) => {
+        const yPos = (index - (lines.length - 1) / 2) * lineHeight;
+        
+        // LAYER 1: THICK BLACK OUTLINE
+        ctx.shadowColor = 'rgba(0, 0, 0, 1)';
+        ctx.shadowBlur = 50;
+        ctx.shadowOffsetX = 5;
+        ctx.shadowOffsetY = 5;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+        ctx.fillText(lineText.trim(), 5, yPos + 5);
+        
+        // LAYER 2: MEDIUM OUTLINE
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.98)';
+        ctx.shadowBlur = 30;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.fillText(lineText.trim(), 3, yPos + 3);
+        
+        // LAYER 3: GLOW
+        ctx.shadowColor = 'rgba(255, 215, 0, 0.3)';
+        ctx.shadowBlur = 40;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = color;
+        ctx.fillText(lineText.trim(), 0, yPos);
+        
+        // LAYER 4: CRISP CORE
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = color;
+        ctx.fillText(lineText.trim(), 0, yPos);
+        
+        // LAYER 5: WHITE HIGHLIGHT
+        ctx.globalAlpha = 0.15;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(lineText.trim(), -1, yPos - 1);
+        ctx.globalAlpha = 1;
+    });
+
+    ctx.restore();
+}
+
+
+/* ============================================================
+   BACKGROUND STARS - ENHANCED
+============================================================ */
+
+function drawStars(scale) {
+    const starCount = 300 + Math.floor(scale * 30);
+    for (let i = 0; i < starCount; i++) {
+        const angle = i * 1.7 + Date.now() / 50000;
+        const radius = 80 + (i * 35) * (0.25 / scale);
+        const x = W / 2 + Math.cos(angle * (0.4 / scale)) * radius * 0.5;
+        const y = H / 2 + Math.sin(angle * (0.4 / scale)) * radius * 0.5;
+        ctx.beginPath();
+        const size = 0.5 + (i % 5) * (0.6 / scale);
+        ctx.arc(x, y, Math.max(0.3, size), 0, Math.PI * 2);
+        const brightness = 0.15 + (i / starCount) * 0.6;
+        ctx.fillStyle = `rgba(255, 215, 0, ${brightness * 0.2})`;
+        ctx.fill();
+        // Glow
+        if (i % 5 === 0) {
+            ctx.shadowColor = 'rgba(255, 215, 0, 0.05)';
+            ctx.shadowBlur = 15 / scale;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+    }
+}
+
+
+/* ============================================================
+   FLOATING PARTICLES - ENHANCED
+============================================================ */
+
+let particles = [];
+for (let i = 0; i < 100; i++) {
+    particles.push({
+        x: Math.random(),
+        y: Math.random(),
+        size: 1 + Math.random() * 4,
+        speedX: (Math.random() - 0.5) * 0.003,
+        speedY: (Math.random() - 0.5) * 0.003,
+        hue: 30 + Math.random() * 30,
+        phase: Math.random() * Math.PI * 2
+    });
+}
+
+function drawParticles(scale, time) {
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            if (i % 3 !== 0 || j % 3 !== 0) continue;
+            const p1 = particles[i];
+            const p2 = particles[j];
+            const dx = (p1.x - p2.x) * W;
+            const dy = (p1.y - p2.y) * H;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 100 / scale) {
+                ctx.beginPath();
+                ctx.moveTo(p1.x * W, p1.y * H);
+                ctx.lineTo(p2.x * W, p2.y * H);
+                const alpha = (1 - dist / (100 / scale)) * 0.04 / scale;
+                ctx.strokeStyle = `rgba(255, 215, 0, ${alpha})`;
+                ctx.lineWidth = 0.5 / scale;
+                ctx.stroke();
+            }
+        }
+    }
+
+    particles.forEach(p => {
+        p.x += p.speedX * (1 / scale) * 2;
+        p.y += p.speedY * (1 / scale) * 2;
+        if (p.x < 0) p.x = 1;
+        if (p.x > 1) p.x = 0;
+        if (p.y < 0) p.y = 1;
+        if (p.y > 1) p.y = 0;
+
+        const px = p.x * W;
+        const py = p.y * H + Math.sin(time * 0.4 + p.phase) * 20;
+        const size = Math.max(0.5, p.size * (1 / scale) * 3);
+
+        // Glow ring
+        const gradient = ctx.createRadialGradient(px, py, 0, px, py, size * 4);
+        const hue = p.hue + time * 0.02;
+        gradient.addColorStop(0, `hsla(${hue}, 100%, 75%, ${0.1 / scale})`);
+        gradient.addColorStop(0.5, `hsla(${hue + 10}, 100%, 65%, ${0.04 / scale})`);
+        gradient.addColorStop(1, `hsla(${hue + 20}, 100%, 55%, 0)`);
+        ctx.beginPath();
+        ctx.arc(px, py, size * 4, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Core
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(0.5, size), 0, Math.PI * 2);
+        ctx.shadowColor = `hsla(${hue}, 100%, 70%, ${0.1 / scale})`;
+        ctx.shadowBlur = 20 / scale;
+        ctx.fillStyle = `hsla(${hue}, 100%, 85%, ${0.2 / scale})`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+}
+
+
+/* ============================================================
+   ZOOM ENGINE
+============================================================ */
+
+const ZOOM_SPEED = 1.005;
+const MAX_SCALE = 28.0;
+const MIN_SCALE = 0.35;
+let lastVerseIndex = -1;
+let lastQuoteIndex = -1;
+
+
+/* ============================================================
+   RENDER LOOP
+============================================================ */
+
+function drawInfinite() {
+    const time = Date.now() / 1000;
+
+    currentScale *= ZOOM_SPEED;
+    if (currentScale > MAX_SCALE) {
+        currentScale = MIN_SCALE;
+    }
+
+    // Background
+    ctx.clearRect(0, 0, W, H);
+    const gradient = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 1.2);
+    gradient.addColorStop(0, '#0a0a1a');
+    gradient.addColorStop(0.4, '#080816');
+    gradient.addColorStop(0.7, '#050510');
+    gradient.addColorStop(1, '#020208');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, W, H);
+
+    drawStars(currentScale);
+    drawParticles(currentScale, time);
+
+    // ============================================================
+    // OPENING
+    // ============================================================
+    if (currentScale >= 0.35 && currentScale <= 1.2) {
+        const opacity = Math.min(1, Math.max(0, (currentScale - 0.35) / 0.25));
+        ctx.globalAlpha = opacity;
+        drawCenteredText(
+            '✨ NTOMBI "BELLZ" MDLULI ✨',
+            75,
+            '#FFD700',
+            currentScale,
+            -40,
+            Math.sin(time * 0.8) * 0.02,
+            W * 0.85
+        );
+        drawCenteredText(
+            'Infinite Light · Infinite Love',
+            28,
+            '#FFB347',
+            currentScale * 0.7,
+            55,
+            0,
+            W * 0.7
+        );
+        ctx.globalAlpha = 1;
+    }
+
+    // ============================================================
+    // BIRTHDAY HEART
+    // ============================================================
+    if (currentScale >= 1.0 && currentScale <= 5.5) {
+        let progress = (currentScale - 1.0) / (5.5 - 1.0);
+        let verseIndex = Math.floor(progress * (bibleVerses.length - 1));
+        let quoteIndex = Math.floor(progress * (motivationalQuotes.length - 1));
+        verseIndex = Math.min(bibleVerses.length - 1, Math.max(0, verseIndex));
+        quoteIndex = Math.min(motivationalQuotes.length - 1, Math.max(0, quoteIndex));
+
+        if (verseIndex !== lastVerseIndex) {
+            lastVerseIndex = verseIndex;
+            console.log(`📖 ${bibleVerses[verseIndex]}`);
+        }
+        if (quoteIndex !== lastQuoteIndex) {
+            lastQuoteIndex = quoteIndex;
+            console.log(`💫 ${motivationalQuotes[quoteIndex]}`);
+        }
+
+        // Golden rings
+        for (let i = 0; i < 50; i++) {
+            const angle = (i / 50) * Math.PI * 2 + time * 0.4;
+            const radius = 200 * (1 / currentScale) * 0.9;
+            const x = W / 2 + Math.cos(angle) * radius;
+            const y = H / 2 + Math.sin(angle) * radius;
+            const size = 2 + (8 / currentScale);
+            const hue = 30 + i * 7 + time * 20;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.shadowColor = `hsla(${hue}, 100%, 70%, ${0.15 / currentScale})`;
+            ctx.shadowBlur = 20 / currentScale;
+            ctx.fillStyle = `hsla(${hue}, 100%, 75%, ${0.12 / currentScale})`;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // HAPPY BIRTHDAY
+        const pulse = 1 + Math.sin(time * 1.5) * 0.04;
+        drawCenteredText(
+            '❤️ HAPPY BIRTHDAY ❤️',
+            75 * pulse,
+            '#FF6B6B',
+            currentScale * 0.6,
+            -190,
+            Math.sin(time * 0.5) * 0.02,
+            W * 0.85
+        );
+
+        // NAME
+        drawCenteredText(
+            'NTOMBI "BELLZ" MDLULI',
+            52,
+            '#FFD700',
+            currentScale * 0.42,
+            -110,
+            Math.sin(time * 0.7) * 0.01,
+            W * 0.85
+        );
+
+        // BIBLE VERSE - GOLD
+        drawCenteredText(
+            bibleVerses[verseIndex],
+            28,
+            '#FFD700',
+            currentScale * 0.26,
+            25,
+            0,
+            W * 0.78
+        );
+
+        // QUOTE - LIGHT GOLD
+        drawCenteredText(
+            `"${motivationalQuotes[quoteIndex]}"`,
+            28,
+            '#FFE4B5',
+            currentScale * 0.23,
+            145,
+            0,
+            W * 0.72
+        );
+
+        // FROM - ALWAYS VISIBLE AT BOTTOM
+        drawCenteredText(
+            '✨ From Your Brother and Mkhulu ✨',
+            26,
+            '#FFFFFF',
+            currentScale * 0.2,
+            250,
+            0,
+            W * 0.6
+        );
+    }
+
+    // ============================================================
+    // DEEPER INFINITE
+    // ============================================================
+    if (currentScale >= 5.0 && currentScale <= 25.0) {
+        let progress = (currentScale - 5.0) / (25.0 - 5.0);
+        let verseIndex = Math.floor(progress * (bibleVerses.length - 1));
+        let quoteIndex = Math.floor(progress * (motivationalQuotes.length - 1));
+        verseIndex = Math.min(bibleVerses.length - 1, Math.max(0, verseIndex));
+        quoteIndex = Math.min(motivationalQuotes.length - 1, Math.max(0, quoteIndex));
+
+        if (verseIndex !== lastVerseIndex) {
+            lastVerseIndex = verseIndex;
+            console.log(`📖 ${bibleVerses[verseIndex]}`);
+        }
+        if (quoteIndex !== lastQuoteIndex) {
+            lastQuoteIndex = quoteIndex;
+            console.log(`💫 ${motivationalQuotes[quoteIndex]}`);
+        }
+
+        // Geometric patterns
+        for (let i = 0; i < 60; i++) {
+            const angle = (i / 60) * Math.PI * 2 + time * 0.05;
+            const radius = 150 * (1 / currentScale) * 2.8;
+            const x = W / 2 + Math.cos(angle) * radius;
+            const y = H / 2 + Math.sin(angle) * radius;
+            const hue = 30 + i * 3 + time * 15;
+            ctx.beginPath();
+            ctx.arc(x, y, 3 * (1 / currentScale), 0, Math.PI * 2);
+            ctx.shadowColor = `hsla(${hue}, 100%, 70%, ${0.08 / currentScale})`;
+            ctx.shadowBlur = 15 / currentScale;
+            ctx.strokeStyle = `hsla(${hue}, 100%, 70%, ${(0.15 + Math.sin(time + i * 0.2) * 0.1) / currentScale})`;
+            ctx.lineWidth = 1.5 / currentScale;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        drawCenteredText(
+            '♾️ INFINITE LOVE ♾️',
+            58,
+            '#FFD700',
+            currentScale * 0.25,
+            -140,
+            Math.sin(time * 0.2) * 0.04,
+            W * 0.7
+        );
+
+        drawCenteredText(
+            bibleVerses[verseIndex],
+            28,
+            '#FFE4B5',
+            currentScale * 0.15,
+            20,
+            0,
+            W * 0.7
+        );
+
+        drawCenteredText(
+            `"${motivationalQuotes[quoteIndex]}"`,
+            28,
+            '#FFD700',
+            currentScale * 0.13,
+            145,
+            0,
+            W * 0.65
+        );
+
+        // FROM - ALWAYS VISIBLE
+        drawCenteredText(
+            '✨ From Your Brother and Mkhulu ✨',
+            24,
+            '#FFFFFF',
+            currentScale * 0.11,
+            245,
+            0,
+            W * 0.6
+        );
+    }
+
+    // ============================================================
+    // STATUS
+    // ============================================================
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.05)';
+    ctx.font = '9px monospace';
+    ctx.fillText(`✨ ${currentScale.toFixed(2)}x`, 20, H - 20);
+
+    requestAnimationFrame(drawInfinite);
+}
+
+
+/* ============================================================
+   CLICK TO RESTART
+============================================================ */
+
+canvas.addEventListener('click', () => {
+    currentScale = MIN_SCALE;
+    lastVerseIndex = -1;
+    lastQuoteIndex = -1;
+    console.log('🔄 Journey restarted.');
+});
+
+
+/* START */
+
+drawInfinite();
+
+console.log('✨ INFINITE BIRTHDAY JOURNEY FOR NTOMBI "BELLZ" MDLULI');
+console.log('📖 30 Bible Verses | 💫 30 Motivational Quotes');
+console.log('💛 From Your Brother and Mkhulu');
+
+</script>
+
+</body>
+</html>
